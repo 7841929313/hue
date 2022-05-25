@@ -17,6 +17,7 @@ from __future__ import absolute_import
 
 import logging
 import sys
+import random
 
 from hadoop.core_site import get_conf
 
@@ -43,7 +44,16 @@ def validate_fs(fs=None):
 
 def get_cab_address(fs=None):
   fs = validate_fs(fs)
-  return get_conf().get(_CNF_CAB_ADDRESS % fs) if fs else None
+  if fs:
+    id_broker_addr = get_conf().get(_CNF_CAB_ADDRESS % fs)
+    if id_broker_addr:
+      id_broker_addr_list = id_broker_addr.split(',')
+      id_broker_rand = random.choice(id_broker_addr_list)
+      return id_broker_rand
+    else:
+      return None
+  else:
+    return get_conf().get(_CNF_CAB_ADDRESS % fs) if fs else None
 
 def get_cab_dt_path(fs=None):
   fs = validate_fs(fs)
